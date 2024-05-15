@@ -1,21 +1,18 @@
-import { StyleSheet, ScrollView } from "react-native";
-
+import { ScrollView } from "react-native";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Picker } from "react-native-ui-lib";
+import { Button, Picker } from "react-native-ui-lib";
 import { useState } from "react";
 import { subjectOptions } from "@/assets/data/FixedData";
+import Board from "@/components/Board";
+import { styles } from "@/constants/Styles";
 
 const HomeScreen: React.FC = () => {
   const [subject, setSubject] = useState<string>();
+  const [startGame, setStartGame] = useState<boolean>(false);
 
-  const getSelectedSubject = (value: string = "") => {
-    console.log(value);
-    const found = subjectOptions.filter((elem) => elem.key === value);
-    console.log({ found });
-    return "lugares";
-  };
+  const handleFinishGame = () => setStartGame(false);
 
   return (
     <ScrollView style={styles.container}>
@@ -26,12 +23,9 @@ const HomeScreen: React.FC = () => {
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Elige el tema</ThemedText>
         <Picker
-          value={getSelectedSubject(subject)}
+          value={subject}
           placeholder="Elige un tema"
-          onChange={(item) => {
-            console.log(item);
-            setSubject(item?.toString());
-          }}
+          onChange={(item) => setSubject(item?.toString())}
           style={{ backgroundColor: "white" }}
         >
           {subjectOptions.map((option) => (
@@ -42,6 +36,20 @@ const HomeScreen: React.FC = () => {
             />
           ))}
         </Picker>
+        {!startGame && (
+          <Button
+            label={"Jugar"}
+            size={Button.sizes.medium}
+            disabled={!subject}
+            onPress={() => setStartGame(true)}
+          />
+        )}
+        {startGame && (
+          <Board
+            selectedSubject={subject || ""}
+            finishGame={handleFinishGame}
+          />
+        )}
       </ThemedView>
     </ScrollView>
   );
@@ -49,26 +57,4 @@ const HomeScreen: React.FC = () => {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 50,
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});
+
