@@ -33,6 +33,7 @@ const HomeScreen: React.FC = () => {
               key={option.key}
               label={option.value}
               value={option.key}
+              disabled={startGame}
             />
           ))}
         </Picker>
@@ -56,5 +57,3 @@ const HomeScreen: React.FC = () => {
 };
 
 export default HomeScreen;
-
-

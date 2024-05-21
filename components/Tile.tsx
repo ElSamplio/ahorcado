@@ -6,7 +6,6 @@ interface TileProps {
 }
 
 const Tile: React.FC<TileProps> = ({ isEmptySpace, value }) => {
-  console.log({ isEmptySpace, value });
   return (
     <View
       style={{
@@ -19,7 +18,7 @@ const Tile: React.FC<TileProps> = ({ isEmptySpace, value }) => {
         marginTop: 10,
         marginBottom: 10,
         paddingTop: 5,
-        paddingLeft: 5
+        paddingLeft: 5,
       }}
     >
       <Text>{value}</Text>
