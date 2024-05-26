@@ -37,6 +37,7 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
     setFailedAttempts([]);
     setHiddenWord([]);
     finishGame();
+    console.log('mundo')
   };
 
   const checkLetter = (letter: string) => {
