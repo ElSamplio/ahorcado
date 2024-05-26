@@ -30,6 +30,10 @@ export type HiddenLetter = {
   hidden: boolean
 }
 
+export enum GAME_STATUS { FAILED, SUCCESS, NONE }
+
+export const FAILURES_ALLOWED = 10;
+
 export const gameData = {
   animales: [
     "Abeja",

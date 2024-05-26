@@ -8,11 +8,11 @@ import { useEffect, useState } from "react";
 import Tile from "./Tile";
 import LettersGrid from "./LettersGrid";
 import AhorcadoDrawing from "./AhorcadoDrawing/AhorcadoDrawing";
-import { HiddenLetter } from "@/assets/data/FixedData";
+import { FAILURES_ALLOWED, GAME_STATUS, HiddenLetter } from "@/assets/data/FixedData";
 
 interface BoardProps {
   selectedSubject: string;
-  finishGame: () => void;
+  finishGame: (status: GAME_STATUS) => void;
 }
 
 const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
@@ -33,12 +33,15 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
     }
   }, [dataSet]);
 
+  useEffect(() => {
+    if (failedAttempts.length >= FAILURES_ALLOWED) {
+      finishGame(GAME_STATUS.FAILED)
+    }
+  }, [failedAttempts]);
+
   const handleFinishGame = () => {
     setFailedAttempts([]);
     setHiddenWord([]);
-    finishGame();
-    console.log('hola')
-    console.log('mundo')
   };
 
   const checkLetter = (letter: string) => {
