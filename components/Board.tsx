@@ -20,6 +20,8 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
   const [hiddenWord, setHiddenWord] = useState<HiddenLetter[]>([]);
   const [failedAttempts, setFailedAttempts] = useState<number[]>([]);
   const [pressedLetters, setPressedLetters] = useState<string[]>([]);
+  const [splittedWord, setSplittedWord] = useState<string[]>([]);
+  const [spaceIndexes, setSpaceIndexes] = useState<number[]>([]);
 
   useEffect(() => {
     const item = dataSet
@@ -27,18 +29,27 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
       : null;
     if (item) {
       const splittedItem = [...item.toUpperCase().split("")];
+      const indicesEspacios = [0];
+      for (let i = 0; i < item.length; i++) {
+        if (item[i] === ' ') {
+          indicesEspacios.push(i);
+        }
+      }
+      setSpaceIndexes([...indicesEspacios])
       setHiddenWord(
         splittedItem.map((elem: string) => ({ letter: elem, hidden: true }))
       );
     }
   }, [dataSet]);
 
+  useEffect(() => {
+    console.log({ spaceIndexes })
+  }, [spaceIndexes])
+
   const handleFinishGame = () => {
     setFailedAttempts([]);
     setHiddenWord([]);
     finishGame();
-    console.log('hola')
-    console.log('mundo')
   };
 
   const checkLetter = (letter: string) => {
@@ -65,13 +76,18 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
   return (
     <ScrollView>
       <ThemedView style={styles.hiddenWordGrid}>
-        {hiddenWord?.map((item, index) => (
-          <Tile
-            key={index}
-            isEmptySpace={item.letter === " "}
-            value={item.hidden ? "" : item.letter}
-          />
-        ))}
+        {splittedWord?.map((splitted, spIndex) => (
+          <View key={spIndex} style={{ display: 'flex', flexDirection: 'row' }}>
+            {hiddenWord?.map((item, index) => (
+              <Tile
+                key={index}
+                isEmptySpace={item.letter === " "}
+                value={item.hidden ? "" : item.letter}
+              />
+            ))}
+          </View>
+        ))
+        }
       </ThemedView>
       <View style={{ alignItems: "center" }}>
         <ThemedText type="subtitle">Elige tu letra</ThemedText>

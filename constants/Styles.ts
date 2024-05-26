@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
       position: "absolute",
     },
     hiddenWordGrid:{
-      flexDirection: "row",
+      flexDirection: "column",
       gap: 5, 
       backgroundColor: 'white'
     }
