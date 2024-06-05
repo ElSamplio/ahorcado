@@ -1,10 +1,10 @@
-import { ScrollView } from "react-native";
+import { ScrollView, Alert } from "react-native";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Button, Picker } from "react-native-ui-lib";
 import { useState } from "react";
-import { subjectOptions } from "@/assets/data/FixedData";
+import { GAME_STATUS, subjectOptions } from "@/assets/data/FixedData";
 import Board from "@/components/Board";
 import { styles } from "@/constants/Styles";
 
@@ -12,7 +12,27 @@ const HomeScreen: React.FC = () => {
   const [subject, setSubject] = useState<string>();
   const [startGame, setStartGame] = useState<boolean>(false);
 
-  const handleFinishGame = () => setStartGame(false);
+  const handleFinishGame = (status: GAME_STATUS, hiddenWord?: string) => {
+    switch (status) {
+      case GAME_STATUS.FAILED:
+        Alert.alert("Perdiste! :(", `La palabra era ${hiddenWord}`, [
+          {
+            text: "OK",
+            onPress: () => setStartGame(false),
+          },
+        ]);
+        break;
+      case GAME_STATUS.SUCCESS:
+        Alert.alert("Ganaste! :)", `Encontraste la palabra ${hiddenWord}`, [
+          {
+            text: "OK",
+            onPress: () => setStartGame(false),
+          },
+        ]);
+      default:
+        setStartGame(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
