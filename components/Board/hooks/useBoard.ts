@@ -1,31 +1,27 @@
-import { ScrollView } from "react-native";
-import { Button, TextField, View } from "react-native-ui-lib";
-import { ThemedView } from "./ThemedView";
-import { ThemedText } from "./ThemedText";
-import { styles } from "@/constants/Styles";
+import {
+  FAILURES_ALLOWED,
+  GAME_STATUS,
+  HiddenLetter,
+} from "@/assets/data/FixedData";
 import useFetchData from "@/hooks/useFetchData";
 import { useEffect, useState } from "react";
-import Tile from "./Tile";
-import LettersGrid from "./LettersGrid";
-import AhorcadoDrawing from "./AhorcadoDrawing/AhorcadoDrawing";
-import { FAILURES_ALLOWED, GAME_STATUS, HiddenLetter } from "@/assets/data/FixedData";
 
-interface BoardProps {
-  selectedSubject: string;
-  finishGame: (status: GAME_STATUS) => void;
-}
-
-const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
+const useBoard = (
+  selectedSubject: string,
+  finishGame: (status: GAME_STATUS, hiddenWord?: string) => void
+) => {
   const { dataSet } = useFetchData(selectedSubject);
   const [hiddenWord, setHiddenWord] = useState<HiddenLetter[]>([]);
   const [failedAttempts, setFailedAttempts] = useState<number[]>([]);
   const [pressedLetters, setPressedLetters] = useState<string[]>([]);
+  const [completeHiddenWord, setCompleteHiddenWord] = useState<string>("");
 
   useEffect(() => {
     const item = dataSet
       ? dataSet[Math.floor(Math.random() * dataSet?.length)]
       : null;
     if (item) {
+      setCompleteHiddenWord(item);
       const splittedItem = [...item.toUpperCase().split("")];
       setHiddenWord(
         splittedItem.map((elem: string) => ({ letter: elem, hidden: true }))
@@ -35,13 +31,21 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
 
   useEffect(() => {
     if (failedAttempts.length >= FAILURES_ALLOWED) {
-      finishGame(GAME_STATUS.FAILED)
+      finishGame(GAME_STATUS.FAILED, completeHiddenWord);
     }
   }, [failedAttempts]);
+
+  useEffect(() => {
+    const unHidden = hiddenWord.filter((elem) => elem.hidden === false);
+    if (unHidden.length !== 0 && unHidden.length === hiddenWord.length) {
+      finishGame(GAME_STATUS.SUCCESS, completeHiddenWord);
+    }
+  }, [hiddenWord]);
 
   const handleFinishGame = () => {
     setFailedAttempts([]);
     setHiddenWord([]);
+    finishGame(GAME_STATUS.NONE);
   };
 
   const checkLetter = (letter: string) => {
@@ -65,28 +69,14 @@ const Board: React.FC<BoardProps> = ({ selectedSubject, finishGame }) => {
     }
   };
 
-  return (
-    <ScrollView>
-      <ThemedView style={styles.hiddenWordGrid}>
-        {hiddenWord?.map((item, index) => (
-          <Tile
-            key={index}
-            isEmptySpace={item.letter === " "}
-            value={item.hidden ? "" : item.letter}
-          />
-        ))}
-      </ThemedView>
-      <View style={{ alignItems: "center" }}>
-        <ThemedText type="subtitle">Elige tu letra</ThemedText>
-        <LettersGrid
-          pressedLetters={pressedLetters}
-          onLetterPress={checkLetter}
-        />
-      </View>
-      <AhorcadoDrawing failures={failedAttempts} />
-      <Button label="Terminar" onPress={handleFinishGame} />
-    </ScrollView>
-  );
+  return {
+    hiddenWord,
+    failedAttempts,
+    pressedLetters,
+    completeHiddenWord,
+    handleFinishGame,
+    checkLetter,
+  };
 };
 
-export default Board;
+export default useBoard;

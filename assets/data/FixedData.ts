@@ -1,3 +1,4 @@
+import elements from "@/components/AhorcadoDrawing/elements";
 import { OptionModel } from "@/models/models";
 
 export const subjectOptions: OptionModel[] = [
@@ -32,7 +33,7 @@ export type HiddenLetter = {
 
 export enum GAME_STATUS { FAILED, SUCCESS, NONE }
 
-export const FAILURES_ALLOWED = 10;
+export const FAILURES_ALLOWED = elements.length;
 
 export const gameData = {
   animales: [
